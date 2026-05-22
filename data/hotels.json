@@ -1,0 +1,146 @@
+[
+    {
+        "hotel_id": "HOT_DEL_001",
+        "name": "The Leela Palace",
+        "city": "Delhi",
+        "stars": 5,
+        "price_per_night": 12000,
+        "rating": 4.8,
+        "amenities": ["pool", "spa", "gym", "wifi", "breakfast"]
+    },
+    {
+        "hotel_id": "HOT_DEL_002",
+        "name": "Taj Mahal Hotel",
+        "city": "Delhi",
+        "stars": 5,
+        "price_per_night": 10500,
+        "rating": 4.7,
+        "amenities": ["pool", "spa", "wifi", "breakfast"]
+    },
+    {
+        "hotel_id": "HOT_DEL_003",
+        "name": "Radisson Blu",
+        "city": "Delhi",
+        "stars": 4,
+        "price_per_night": 6500,
+        "rating": 4.5,
+        "amenities": ["pool", "gym", "wifi", "breakfast"]
+    },
+    {
+        "hotel_id": "HOT_GOA_001",
+        "name": "W Goa",
+        "city": "Goa",
+        "stars": 5,
+        "price_per_night": 15000,
+        "rating": 4.9,
+        "amenities": ["pool", "spa", "beach access", "wifi"]
+    },
+    {
+        "hotel_id": "HOT_GOA_002",
+        "name": "Taj Fort Aguada",
+        "city": "Goa",
+        "stars": 5,
+        "price_per_night": 13500,
+        "rating": 4.8,
+        "amenities": ["pool", "spa", "heritage view", "wifi"]
+    },
+    {
+        "hotel_id": "HOT_GOA_003",
+        "name": "Novotel Goa Resort",
+        "city": "Goa",
+        "stars": 4,
+        "price_per_night": 7000,
+        "rating": 4.4,
+        "amenities": ["pool", "gym", "wifi", "breakfast"]
+    },
+    {
+        "hotel_id": "HOT_MUM_001",
+        "name": "Taj Mahal Palace",
+        "city": "Mumbai",
+        "stars": 5,
+        "price_per_night": 18000,
+        "rating": 4.9,
+        "amenities": ["pool", "spa", "sea view", "wifi"]
+    },
+    {
+        "hotel_id": "HOT_MUM_002",
+        "name": "ITC Maratha",
+        "city": "Mumbai",
+        "stars": 5,
+        "price_per_night": 11000,
+        "rating": 4.7,
+        "amenities": ["pool", "gym", "wifi", "breakfast"]
+    },
+    {
+        "hotel_id": "HOT_BLR_001",
+        "name": "The Oberoi",
+        "city": "Bangalore",
+        "stars": 5,
+        "price_per_night": 9500,
+        "rating": 4.8,
+        "amenities": ["pool", "spa", "wifi", "breakfast"]
+    },
+    {
+        "hotel_id": "HOT_BLR_002",
+        "name": "ITC Gardenia",
+        "city": "Bangalore",
+        "stars": 5,
+        "price_per_night": 8800,
+        "rating": 4.7,
+        "amenities": ["pool", "gym", "wifi", "breakfast"]
+    },
+    {
+        "hotel_id": "HOT_CHE_001",
+        "name": "ITC Grand Chola",
+        "city": "Chennai",
+        "stars": 5,
+        "price_per_night": 9200,
+        "rating": 4.8,
+        "amenities": ["pool", "spa", "wifi", "breakfast"]
+    },
+    {
+        "hotel_id": "HOT_CHE_002",
+        "name": "Taj Coromandel",
+        "city": "Chennai",
+        "stars": 5,
+        "price_per_night": 8500,
+        "rating": 4.7,
+        "amenities": ["pool", "gym", "wifi", "breakfast"]
+    },
+    {
+        "hotel_id": "HOT_JAIPUR_001",
+        "name": "Rambagh Palace",
+        "city": "Jaipur",
+        "stars": 5,
+        "price_per_night": 14500,
+        "rating": 4.9,
+        "amenities": ["pool", "spa", "heritage", "wifi"]
+    },
+    {
+        "hotel_id": "HOT_JAIPUR_002",
+        "name": "Jai Mahal Palace",
+        "city": "Jaipur",
+        "stars": 5,
+        "price_per_night": 12500,
+        "rating": 4.8,
+        "amenities": ["pool", "gym", "wifi", "breakfast"]
+    },
+    {
+        "hotel_id": "HOT_HYD_001",
+        "name": "Park Hyatt",
+        "city": "Hyderabad",
+        "stars": 5,
+        "price_per_night": 10000,
+        "rating": 4.7,
+        "amenities": ["pool", "spa", "wifi", "breakfast"]
+    },
+    {
+        "hotel_id": "HOT_HYD_002",
+        "name": "ITC Kohenur",
+        "city": "Hyderabad",
+        "stars": 5,
+        "price_per_night": 9800,
+        "rating": 4.7,
+        "amenities": ["pool", "gym", "wifi", "breakfast"]
+    }
+]

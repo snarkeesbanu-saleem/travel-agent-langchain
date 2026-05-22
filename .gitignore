@@ -1,0 +1,23 @@
+﻿# Python
+__pycache__/
+*.pyc
+.env
+venv/
+.venv/
+
+# Images & large files
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.mp4
+screenshots/
+charts/
+
+# IDE & OS
+.vscode/
+.idea/
+.DS_Store
+
+# Streamlit secrets
+.streamlit/secrets.toml

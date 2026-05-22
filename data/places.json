@@ -1,0 +1,130 @@
+[
+    {
+        "place_id": "PLC_DEL_001",
+        "name": "India Gate",
+        "city": "Delhi",
+        "type": "monument",
+        "category": "heritage",
+        "rating": 4.7
+    },
+    {
+        "place_id": "PLC_DEL_002",
+        "name": "Qutub Minar",
+        "city": "Delhi",
+        "type": "monument",
+        "category": "heritage",
+        "rating": 4.8
+    },
+    {
+        "place_id": "PLC_DEL_003",
+        "name": "Red Fort",
+        "city": "Delhi",
+        "type": "fort",
+        "category": "heritage",
+        "rating": 4.7
+    },
+    {
+        "place_id": "PLC_GOA_001",
+        "name": "Baga Beach",
+        "city": "Goa",
+        "type": "beach",
+        "category": "beach",
+        "rating": 4.8
+    },
+    {
+        "place_id": "PLC_GOA_002",
+        "name": "Basilica of Bom Jesus",
+        "city": "Goa",
+        "type": "church",
+        "category": "heritage",
+        "rating": 4.9
+    },
+    {
+        "place_id": "PLC_GOA_003",
+        "name": "Fort Aguada",
+        "city": "Goa",
+        "type": "fort",
+        "category": "heritage",
+        "rating": 4.6
+    },
+    {
+        "place_id": "PLC_MUM_001",
+        "name": "Gateway of India",
+        "city": "Mumbai",
+        "type": "monument",
+        "category": "heritage",
+        "rating": 4.8
+    },
+    {
+        "place_id": "PLC_MUM_002",
+        "name": "Marine Drive",
+        "city": "Mumbai",
+        "type": "promenade",
+        "category": "leisure",
+        "rating": 4.7
+    },
+    {
+        "place_id": "PLC_BLR_001",
+        "name": "Lalbagh Botanical Garden",
+        "city": "Bangalore",
+        "type": "garden",
+        "category": "nature",
+        "rating": 4.6
+    },
+    {
+        "place_id": "PLC_BLR_002",
+        "name": "Bangalore Palace",
+        "city": "Bangalore",
+        "type": "palace",
+        "category": "heritage",
+        "rating": 4.5
+    },
+    {
+        "place_id": "PLC_CHE_001",
+        "name": "Marina Beach",
+        "city": "Chennai",
+        "type": "beach",
+        "category": "beach",
+        "rating": 4.7
+    },
+    {
+        "place_id": "PLC_CHE_002",
+        "name": "Kapaleeshwarar Temple",
+        "city": "Chennai",
+        "type": "temple",
+        "category": "heritage",
+        "rating": 4.8
+    },
+    {
+        "place_id": "PLC_JAIPUR_001",
+        "name": "Hawa Mahal",
+        "city": "Jaipur",
+        "type": "palace",
+        "category": "heritage",
+        "rating": 4.8
+    },
+    {
+        "place_id": "PLC_JAIPUR_002",
+        "name": "Amer Fort",
+        "city": "Jaipur",
+        "type": "fort",
+        "category": "heritage",
+        "rating": 4.9
+    },
+    {
+        "place_id": "PLC_HYD_001",
+        "name": "Charminar",
+        "city": "Hyderabad",
+        "type": "monument",
+        "category": "heritage",
+        "rating": 4.8
+    },
+    {
+        "place_id": "PLC_HYD_002",
+        "name": "Golconda Fort",
+        "city": "Hyderabad",
+        "type": "fort",
+        "category": "heritage",
+        "rating": 4.7
+    }
+]
