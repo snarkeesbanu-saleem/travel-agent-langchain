@@ -77,6 +77,3 @@ Run the agent directly from the command line:
 ```bash
 python agent.py
 ```
-*(Windows users running PowerShell/CMD do not need to worry about encoding exceptions; output logs print emojis safely).*
-
----
