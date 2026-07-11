@@ -1,3 +1,14 @@
+---
+title: AI Travel Agent Planner
+emoji: ✈️
+colorFrom: indigo
+colorTo: purple
+sdk: streamlit
+sdk_version: "1.41.0"
+app_file: streamlit_app.py
+pinned: false
+---
+
 # ✈️ Agentic AI Travel Planner
 
 [![Hugging Face Spaces](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Spaces-blue)](https://huggingface.co/spaces/NarkeesBanu/AI-travel-agent-planner)
