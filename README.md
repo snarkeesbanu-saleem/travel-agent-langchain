@@ -11,8 +11,11 @@ pinned: false
 
 # ✈️ Agentic AI Travel Planner
 
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://travel-agent-langchain-cubkrlattdxqsgsftxa894.streamlit.app/)
 [![Hugging Face Spaces](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Spaces-blue)](https://huggingface.co/spaces/NarkeesBanu/AI-travel-agent-planner)
-**Live Demo**: [https://huggingface.co/spaces/NarkeesBanu/AI-travel-agent-planner](https://huggingface.co/spaces/NarkeesBanu/AI-travel-agent-planner)
+
+**Live Demo (Streamlit Cloud)**: [https://travel-agent-langchain-cubkrlattdxqsgsftxa894.streamlit.app/](https://travel-agent-langchain-cubkrlattdxqsgsftxa894.streamlit.app/)
+**Live Demo (Hugging Face)**: [https://huggingface.co/spaces/NarkeesBanu/AI-travel-agent-planner](https://huggingface.co/spaces/NarkeesBanu/AI-travel-agent-planner)
 
 A premium, neon-themed **Agentic AI Travel Planner** built using **LangChain**, **Streamlit**, **Plotly**, and **Open-Meteo**. The application utilizes the **Llama-3.3-70b-versatile** model on Groq to gather flight pricing, recommend local hotels, find targeted attractions, fetch live weather forecasts, and synthesize custom day-wise travel itineraries.
 
