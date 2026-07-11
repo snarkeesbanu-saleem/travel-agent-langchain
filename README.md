@@ -80,26 +80,3 @@ python agent.py
 *(Windows users running PowerShell/CMD do not need to worry about encoding exceptions; output logs print emojis safely).*
 
 ---
-
-## 🐳 Hugging Face Space Deployment
-
-This project is configured to deploy directly to **Hugging Face Spaces** (under a Streamlit SDK setup).
-
-### Binary File Push Protection:
-Because the custom images in `assets/` are binary files, Hugging Face requires tracking them via **Git LFS** (Large File Storage). 
-
-1. Install Git LFS:
-   ```bash
-   git lfs install
-   ```
-2. Make sure `.gitattributes` tracks the binary assets:
-   ```gitattributes
-   *.jpg filter=lfs diff=lfs merge=lfs -text
-   *.png filter=lfs diff=lfs merge=lfs -text
-   ```
-3. Commit and push:
-   ```bash
-   git add .gitattributes assets/
-   git commit -m "Configure Git LFS and assets"
-   git push space main
-   ```
