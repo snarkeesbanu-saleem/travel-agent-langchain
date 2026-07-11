@@ -1,18 +1,6 @@
----
-title: AI Travel Agent Planner
-emoji: ✈️
-colorFrom: indigo
-colorTo: purple
-sdk: streamlit
-sdk_version: "1.41.0"
-app_file: streamlit_app.py
-pinned: false
----
-
 # ✈️ Agentic AI Travel Planner
 
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://travel-agent-langchain-cubkrlattdxqsgsftxa894.streamlit.app/)
-[![Hugging Face Spaces](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Spaces-blue)](https://huggingface.co/spaces/NarkeesBanu/AI-travel-agent-planner)
 
 **Live Demo (Streamlit Cloud)**: [https://travel-agent-langchain-cubkrlattdxqsgsftxa894.streamlit.app/](https://travel-agent-langchain-cubkrlattdxqsgsftxa894.streamlit.app/)
 **Live Demo (Hugging Face)**: [https://huggingface.co/spaces/NarkeesBanu/AI-travel-agent-planner](https://huggingface.co/spaces/NarkeesBanu/AI-travel-agent-planner)
