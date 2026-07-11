@@ -4,9 +4,14 @@ import numpy as np
 import re
 import json
 import os
+import math
 from datetime import date
 import plotly.express as px
 import plotly.graph_objects as go
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 # ---------- YOUR EXISTING TOOLS & AGENT ----------
 try:
@@ -20,7 +25,7 @@ try:
     )
 except ImportError:
     # Fallback mocks in case tools not found
-    plan_trip = lambda x: "Mock itinerary (tools not found)."
+    plan_trip = lambda *args, **kwargs: "Mock itinerary (tools not found)."
     class MockTool:
         def invoke(self, *args, **kwargs):
             return "Mock result ₹5000"
@@ -203,17 +208,32 @@ with st.sidebar:
     source = st.selectbox("Origin Point", sources_list)
     destinations = pairs_dict.get(source, ["Goa", "Delhi"])
     destination = st.selectbox("Target Sector", destinations)
+    
+    # Destination cover image
+    image_file = f"assets/{destination.lower()}.jpg"
+    if not os.path.exists(image_file):
+        image_file = "assets/travel_default.jpg"
+    if os.path.exists(image_file):
+        st.image(image_file, use_container_width=True, caption=f"Explore {destination} 🌟")
+        
     start_date = st.date_input("Launch Date", date(2026, 6, 10))
     end_date = st.date_input("Return Date", date(2026, 6, 12))
     budget_pref = st.selectbox("Resource Allocation", ["Low", "Moderate", "Luxury"])
     interests = st.text_input("Directives (comma sep)", "beaches, heritage")
+    
+    st.markdown("##### 👥 Traveler Profile")
+    travel_style = st.selectbox("Travel Style", ["Solo", "Couple", "Family", "Friends Group"])
+    num_travelers = st.number_input("Number of Travelers", min_value=1, max_value=20, value=1, step=1)
 
     if st.button("✨ INITIATE PLANNING", use_container_width=True):
         with st.spinner("🌍 Agent is planning your perfect trip..."):
             try:
                 # Fetch tool data
                 flight_res = search_flights.invoke({"source": source, "destination": destination, "date": start_date.strftime("%Y-%m-%d")})
-                hotel_res = recommend_hotel.invoke({"city": destination, "min_rating": 4.0, "max_price": 5000})
+                
+                # Dynamic hotel pricing limit based on budget preference
+                max_price = 3000 if budget_pref == "Low" else (8000 if budget_pref == "Moderate" else 999999)
+                hotel_res = recommend_hotel.invoke({"city": destination, "min_rating": 4.0, "max_price": max_price})
                 places_res = find_attractions.invoke({"city": destination, "category": interests.split(",")[0].strip() if interests else "beach"})
                 weather_res = get_weather_forecast.invoke({"city": destination, "start_date": start_date.strftime("%Y-%m-%d"), "end_date": end_date.strftime("%Y-%m-%d")})
 
@@ -232,12 +252,20 @@ with st.sidebar:
                 flight_price = int(price_match.group(1)) if price_match else 5000
                 hotel_price_match = re.search(r'₹(\d+)/night', hotel_res)
                 hotel_price = int(hotel_price_match.group(1)) if hotel_price_match else 3000
+                
                 nights = (end_date - start_date).days
+                if nights <= 0:
+                    nights = 1
+                
+                # Scale budget based on group size
+                room_count = math.ceil(num_travelers / 2.0)
+                daily_expenses_base = 1500 if budget_pref == "Low" else (3500 if budget_pref == "Luxury" else 2000)
+                
                 budget_res = estimate_total_cost.invoke({
-                    "flight_price": flight_price,
-                    "hotel_price_per_night": hotel_price,
+                    "flight_price": flight_price * num_travelers,
+                    "hotel_price_per_night": hotel_price * room_count,
                     "nights": nights,
-                    "daily_expenses": 2000
+                    "daily_expenses": daily_expenses_base * num_travelers
                 })
 
                 st.session_state["tool_data"] = {
@@ -246,9 +274,12 @@ with st.sidebar:
                     "places": places_res,
                     "weather": weather_res,
                     "budget": budget_res,
-                    "flight_price": flight_price,
-                    "hotel_price": hotel_price,
-                    "nights": nights
+                    "flight_price": flight_price * num_travelers,
+                    "hotel_price": hotel_price * room_count,
+                    "nights": nights,
+                    "num_travelers": num_travelers,
+                    "room_count": room_count,
+                    "daily_expenses_base": daily_expenses_base
                 }
 
                 # --- Generate text itinerary using the LLM (only if flight exists) ---
@@ -263,59 +294,83 @@ with st.sidebar:
                 Budget: {budget_res}
                 Provide a day-wise itinerary.
                 """
-                result = plan_trip(user_query)
+                
+                result = plan_trip(
+                    user_query=user_query,
+                    source=source,
+                    dest=destination,
+                    start_date=start_date.strftime("%Y-%m-%d"),
+                    end_date=end_date.strftime("%Y-%m-%d"),
+                    budget_pref=budget_pref,
+                    interests=interests,
+                    num_travelers=num_travelers,
+                    travel_style=travel_style
+                )
                 st.session_state["result"] = result
 
             except Exception as e:
                 st.error(f"Planning error: {e}")
 
-# ---------- MAIN AREA HEADER ----------
-st.markdown("""
-<style>
-.banner {
-    background: linear-gradient(135deg, #0a0f2c 0%, #0d1b3e 50%, #0a0f2c 100%);
-    padding: 2rem 1.5rem;
-    border-radius: 1.5rem;
-    margin: 1rem 0 2rem 0;
-    position: relative;
-    overflow: hidden;
-    box-shadow: 0 0 20px #00ffcc;
-    text-align: center;
-}
-.banner h1 {
-    font-size: 2.5rem;
-    font-weight: 800;
-    color: white !important;
-    text-shadow: 0 0 10px #00ffcc;
-    margin: 0;
-}
-.banner .gold {
-    color: #ffd700 !important;
-    font-size: 1rem;
-    margin-top: 0.5rem;
-    letter-spacing: 2px;
-}
-.banner .icons {
-    margin-top: 1rem;
-    font-size: 1.8rem;
-    display: flex;
-    justify-content: center;
-    gap: 1.5rem;
-}
-</style>
-<div class="banner">
-    <h1>✈️ AGENTIC AI TRAVEL PLANNER</h1>
-    <div class="gold">POWERED BY LANGCHAIN & OPEN‑METEO</div>
-    <div class="icons">
-        <span>🗺️</span><span>✈️</span><span>🏨</span><span>🌴</span><span>🌦️</span>
+    # Currency Converter
+    st.markdown("---")
+    st.header("💱 Currency Converter")
+    base_amt = st.number_input("Amount in INR (₹)", min_value=1, value=1000, step=500)
+    target_currency = st.selectbox("Convert To", ["USD ($)", "EUR (€)", "GBP (£)", "AED (Dirham)"])
+    rates = {"USD ($)": 0.012, "EUR (€)": 0.011, "GBP (£)": 0.0093, "AED (Dirham)": 0.044}
+    conv_val = base_amt * rates[target_currency]
+    st.info(f"✨ {base_amt} INR = {conv_val:.2f} {target_currency.split(' ')[0]}")
+
+# ---------- MAIN AREA BANNER ----------
+banner_file = "assets/banner.jpg"
+if os.path.exists(banner_file):
+    st.image(banner_file, use_container_width=True)
+else:
+    st.markdown("""
+    <style>
+    .banner {
+        background: linear-gradient(135deg, #0a0f2c 0%, #0d1b3e 50%, #0a0f2c 100%);
+        padding: 2rem 1.5rem;
+        border-radius: 1.5rem;
+        margin: 1rem 0 2rem 0;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 0 20px #00ffcc;
+        text-align: center;
+    }
+    .banner h1 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: white !important;
+        text-shadow: 0 0 10px #00ffcc;
+        margin: 0;
+    }
+    .banner .gold {
+        color: #ffd700 !important;
+        font-size: 1rem;
+        margin-top: 0.5rem;
+        letter-spacing: 2px;
+    }
+    .banner .icons {
+        margin-top: 1rem;
+        font-size: 1.8rem;
+        display: flex;
+        justify-content: center;
+        gap: 1.5rem;
+    }
+    </style>
+    <div class="banner">
+        <h1>✈️ AGENTIC AI TRAVEL PLANNER</h1>
+        <div class="gold">POWERED BY LANGCHAIN & OPEN‑METEO</div>
+        <div class="icons">
+            <span>🗺️</span><span>✈️</span><span>🏨</span><span>🌴</span><span>🌦️</span>
+        </div>
     </div>
-</div>
-""", unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
 
 # ---------- METRICS SECTION ----------
 st.markdown("## Welcome back, **User**! 👋")
-st.markdown("### AI Trip Predictions")
 
+# Determine session parameters
 if st.session_state.get("tool_data"):
     data = st.session_state["tool_data"]
     flight_price = data.get("flight_price", 5000)
@@ -326,7 +381,10 @@ if st.session_state.get("tool_data"):
         places_count = 0
     else:
         places_count = len(re.findall(r'^\d+\.', places_text, re.MULTILINE))
-    total_budget = flight_price + (hotel_price * nights) + (2000 * nights)
+    num_travelers = data.get("num_travelers", 1)
+    room_count = data.get("room_count", 1)
+    daily_expenses_base = data.get("daily_expenses_base", 2000)
+    total_budget = flight_price + (hotel_price * nights) + (daily_expenses_base * num_travelers * nights)
     weather_text = data.get("weather", "")
     if weather_text and "Weather forecast for" in weather_text:
         lines = weather_text.split("\n")
@@ -339,20 +397,39 @@ else:
     places_count = 0
     total_budget = 15000
     weather_summary = "2026-06-10: ☀️ 32°C – 34°C"
+    num_travelers = 1
+    room_count = 1
+    daily_expenses_base = 2000
+    nights = 2
 
 col1, col2, col3, col4, col5 = st.columns(5)
 with col1:
-    st.markdown(f"""<div class="metric-card"><div class="metric-value">₹{flight_price}</div><div class="metric-label">Flight Price</div><div class="metric-delta">Lowest fare</div></div>""", unsafe_allow_html=True)
+    st.markdown(f"""<div class="metric-card"><div class="metric-value">₹{flight_price}</div><div class="metric-label">Flight Price</div><div class="metric-delta">For {num_travelers} pax</div></div>""", unsafe_allow_html=True)
 with col2:
-    st.markdown(f"""<div class="metric-card"><div class="metric-value">₹{hotel_price}</div><div class="metric-label">Hotel / night</div><div class="metric-delta">4★ rating</div></div>""", unsafe_allow_html=True)
+    st.markdown(f"""<div class="metric-card"><div class="metric-value">₹{hotel_price}</div><div class="metric-label">Hotel / night</div><div class="metric-delta">For {room_count} room(s)</div></div>""", unsafe_allow_html=True)
 with col3:
     st.markdown(f"""<div class="metric-card"><div class="metric-value">{places_count}</div><div class="metric-label">Attractions</div><div class="metric-delta">Top rated</div></div>""", unsafe_allow_html=True)
 with col4:
-    st.markdown(f"""<div class="metric-card"><div class="metric-value">₹{total_budget}</div><div class="metric-label">Total Budget</div><div class="metric-delta">Including local</div></div>""", unsafe_allow_html=True)
+    st.markdown(f"""<div class="metric-card"><div class="metric-value">₹{total_budget}</div><div class="metric-label">Total Budget</div><div class="metric-delta">Group total</div></div>""", unsafe_allow_html=True)
 with col5:
     st.markdown(f"""<div class="metric-card"><div style="font-size:1.2rem; font-weight:bold; color:#00ffcc;">{weather_summary[:50]}</div><div class="metric-label">Weather</div><div class="metric-delta">Live forecast</div></div>""", unsafe_allow_html=True)
 
 st.markdown("---")
+
+# Dynamic Packing checklist in the sidebar
+with st.sidebar:
+    st.markdown("---")
+    st.header("🎒 Packing Checklist")
+    pack_list = ["Passports & Tickets", "Phone Charger & Powerbank", "Toiletries", "First-Aid Kit"]
+    if "beach" in interests.lower() or "goa" in destination.lower():
+        pack_list.extend(["Swimwear", "Sunscreen (SPF 50+)", "Sunglasses", "Flip Flops"])
+    if "heritage" in interests.lower() or "temple" in interests.lower():
+        pack_list.extend(["Modest Clothing", "Comfortable Shoes"])
+    if "rain" in weather_summary.lower() or "cloud" in weather_summary.lower() or "precipitation" in weather_summary.lower() or "🌧️" in weather_summary:
+        pack_list.extend(["Umbrella/Raincoat", "Waterproof drybag"])
+    
+    for item in pack_list:
+        st.checkbox(item, value=False, key=f"pack_{item}")
 
 # ---------- TEXT ITINERARY ----------
 if "result" in st.session_state and st.session_state["result"]:
@@ -371,12 +448,12 @@ if "result" in st.session_state and st.session_state["result"]:
         )
 else:
     st.markdown('<div class="glass-card">', unsafe_allow_html=True)
-    st.markdown("### 🌟 Welcome to your AI-powered travel companion\n\n- ✨ Get personalised day-wise itineraries\n- 🌦️ Live weather forecasts\n- 💰 Smart budget estimation\n- 🏨 Hotel & flight recommendations\n- 📊 **15 interactive 2D charts**\n\n👈 Fill in your trip details and click 'INITIATE PLANNING'")
+    st.markdown("### 🌟 Welcome to your AI-powered travel companion\n\n- ✨ Get personalised day-wise itineraries\n- 🌦️ Live weather forecasts\n- 💰 Smart budget estimation\n- 🏨 Hotel & flight recommendations\n- 👥 **Group cost scaling support**\n- 🎒 **Dynamic weather-aware packing checklist**\n- 📊 **15 interactive 2D charts**\n\n👈 Fill in your trip details and click 'INITIATE PLANNING'")
     st.markdown('</div>', unsafe_allow_html=True)
 
 st.markdown("---")
 
-# ---------- 15 CHARTS SECTION (unchanged) ----------
+# ---------- 15 CHARTS SECTION ----------
 st.markdown("## 📊 DEEP DIVE ANALYTICS OVERVIEW")
 st.markdown("*Scrolling data projection sequence initiated. Each metric isolated for maximum clarity.*")
 
@@ -403,8 +480,8 @@ def style_2d(fig, title="", height=450):
 st.markdown("<br>", unsafe_allow_html=True)
 fig1 = go.Figure(go.Indicator(
     mode="gauge+number", value=flight_price, number={'prefix': "₹", 'font': {'color': accent, 'size': 50}},
-    title={'text': "ESTIMATED FLIGHT PRICE", 'font': {'color': text_col, 'size': 20}},
-    gauge={'axis': {'range': [None, 10000]}, 'bar': {'color': accent}, 'bgcolor': "rgba(255,255,255,0.1)"}
+    title={'text': f"FLIGHT PRICE (FOR {num_travelers} PAX)", 'font': {'color': text_col, 'size': 20}},
+    gauge={'axis': {'range': [None, max(10000, flight_price * 1.2)]}, 'bar': {'color': accent}, 'bgcolor': "rgba(255,255,255,0.1)"}
 ))
 st.plotly_chart(style_2d(fig1, height=350), use_container_width=True)
 st.markdown("---")
@@ -412,8 +489,8 @@ st.markdown("---")
 # Chart 2: Hotel Price Gauge
 fig2 = go.Figure(go.Indicator(
     mode="gauge+number", value=hotel_price, number={'prefix': "₹", 'font': {'color': accent_alt, 'size': 50}},
-    title={'text': "AVERAGE HOTEL / NIGHT", 'font': {'color': text_col, 'size': 20}},
-    gauge={'axis': {'range': [None, 8000]}, 'bar': {'color': accent_alt}, 'bgcolor': "rgba(255,255,255,0.1)"}
+    title={'text': f"HOTEL / NIGHT (FOR {room_count} ROOMS)", 'font': {'color': text_col, 'size': 20}},
+    gauge={'axis': {'range': [None, max(8000, hotel_price * 1.2)]}, 'bar': {'color': accent_alt}, 'bgcolor': "rgba(255,255,255,0.1)"}
 ))
 st.plotly_chart(style_2d(fig2, height=350), use_container_width=True)
 st.markdown("---")
@@ -428,16 +505,22 @@ st.plotly_chart(style_2d(fig3, height=350), use_container_width=True)
 st.markdown("---")
 
 # Chart 4: Daily Spending Donut
-labels = ['Food', 'Local Travel', 'Activities', 'Miscellaneous']
-values = [40, 20, 30, 10]
+daily_exp_total = daily_expenses_base * num_travelers * nights
+food_cost = int(daily_exp_total * 0.40)
+travel_cost = int(daily_exp_total * 0.20)
+activities_cost = int(daily_exp_total * 0.30)
+misc_cost = int(daily_exp_total * 0.10)
+
+labels = [f'Food (₹{food_cost})', f'Local Travel (₹{travel_cost})', f'Activities (₹{activities_cost})', f'Miscellaneous (₹{misc_cost})']
+values = [food_cost, travel_cost, activities_cost, misc_cost]
 fig4 = go.Figure(data=[go.Pie(labels=labels, values=values, hole=0.5, 
                               marker=dict(colors=[accent, accent_alt, "#ff00aa", "#b366ff"]))])
-fig4.update_traces(hoverinfo='label+percent', textinfo='label+percent', textfont_size=16)
+fig4.update_traces(hoverinfo='label+percent', textinfo='percent', textfont_size=16)
 fig4.update_layout(showlegend=True)
 st.plotly_chart(style_2d(fig4, "1. EXPECTED DAILY SPENDING BREAKDOWN", height=500), use_container_width=True)
 st.markdown("---")
 
-# Chart 5: Route Projection Map (with improved coordinates)
+# Chart 5: Route Projection Map
 city_coords = {
     "Delhi": (28.6139, 77.2090),
     "Mumbai": (19.0760, 72.8777),
@@ -468,18 +551,25 @@ st.markdown("---")
 # Chart 6: Airline Scatter
 df_flight_2d = pd.DataFrame({
     "Duration (Hrs)": [1.5, 1.8, 2.0, 2.5, 1.6], 
-    "Price (₹)": [4200, 4800, 5500, 3900, 6000], 
+    "Price (₹)": [4200 * num_travelers, 4800 * num_travelers, 5500 * num_travelers, 3900 * num_travelers, 6000 * num_travelers], 
     "Airline": ["SpiceJet", "IndiGo", "Vistara", "Air India Express", "Air India"]
 })
 fig6 = px.scatter(df_flight_2d, x="Duration (Hrs)", y="Price (₹)", color="Airline", size="Price (₹)", size_max=25)
 fig6.update_traces(marker=dict(line=dict(width=1, color='White')))
-st.plotly_chart(style_2d(fig6, "3. AIRLINE COMPARISON: DURATION VS PRICE", height=500), use_container_width=True)
+st.plotly_chart(style_2d(fig6, "3. AIRLINE COMPARISON: DURATION VS PRICE (SCALED)", height=500), use_container_width=True)
 st.markdown("---")
 
 # Chart 7: Cumulative Budget Area
-days = np.arange(1, 8)
-costs = np.cumsum([flight_price, hotel_price, 2500, 1500, 3000, 1000, 500])
-fig7 = px.area(x=days, y=costs, labels={'x': 'Timeline (Days)', 'y': 'Cumulative Cost (₹)'})
+trip_days = max(3, nights + 1)
+days_axis = np.arange(1, trip_days + 1)
+daily_exp_total_per_day = daily_expenses_base * num_travelers
+daily_costs = [flight_price + hotel_price + daily_exp_total_per_day] # Day 1
+for _ in range(1, trip_days - 1):
+    daily_costs.append(hotel_price + daily_exp_total_per_day) # Middle days
+daily_costs.append(daily_exp_total_per_day) # Last day
+costs = np.cumsum(daily_costs)
+
+fig7 = px.area(x=days_axis, y=costs, labels={'x': 'Timeline (Days)', 'y': 'Cumulative Cost (₹)'})
 fig7.update_traces(line_color=accent_alt, fillcolor=f"rgba(0, 191, 255, 0.2)")
 st.plotly_chart(style_2d(fig7, "4. CUMULATIVE BUDGET TRAJECTORY", height=500), use_container_width=True)
 st.markdown("---")
@@ -514,21 +604,21 @@ st.markdown("---")
 
 # Chart 11: Flight Pricing by Hour Scatter
 hours = np.random.randint(0, 24, 150)
-prices = 4000 + (np.abs(hours - 12) * 150) + np.random.randint(-400, 400, 150)
+prices = (4000 + (np.abs(hours - 12) * 150) + np.random.randint(-400, 400, 150)) * num_travelers
 fig11 = px.scatter(x=hours, y=prices, labels={'x': 'Departure Hour (24H)', 'y': 'Price (₹)'}, color=prices, color_continuous_scale='aggrnyl')
 fig11.update_layout(coloraxis_showscale=False)
-st.plotly_chart(style_2d(fig11, "8. FLIGHT PRICING VARIANCE BY HOUR", height=500), use_container_width=True)
+st.plotly_chart(style_2d(fig11, "8. FLIGHT PRICING VARIANCE BY HOUR (SCALED)", height=500), use_container_width=True)
 st.markdown("---")
 
 # Chart 12: Hotel Tier Bar
 df_hotel_bar = pd.DataFrame({
     "Category": ["Luxury (5★)", "Premium (4★)", "Budget (3★)", "Hostel/Guest"], 
-    "Average Price (₹)": [12000, 6000, 3000, 1200], 
+    "Average Price (₹)": [12000 * room_count, 6000 * room_count, 3000 * room_count, 1200 * room_count], 
     "User Rating": [4.8, 4.2, 3.8, 4.5]
 })
 fig12 = px.bar(df_hotel_bar, x="Category", y="Average Price (₹)", color="User Rating", color_continuous_scale="Purp", text="Average Price (₹)")
 fig12.update_layout(coloraxis_showscale=False)
-st.plotly_chart(style_2d(fig12, "9. ACCOMMODATION TIER ANALYSIS", height=500), use_container_width=True)
+st.plotly_chart(style_2d(fig12, "9. ACCOMMODATION TIER ANALYSIS (FOR GROUP)", height=500), use_container_width=True)
 st.markdown("---")
 
 # Chart 13: Hotel Star Distribution Histogram
@@ -556,5 +646,3 @@ fig15 = go.Figure(go.Funnel(
     marker={'color': [accent, accent_alt, "#ff00aa", "#b366ff", "#00ffcc"]}
 ))
 st.plotly_chart(style_2d(fig15, "12. USER BOOKING CONVERSION FUNNEL", height=500), use_container_width=True)
-
-# No footer line added

@@ -1,7 +1,9 @@
-﻿# Python
+
+# Python
 __pycache__/
 *.pyc
 .env
+grok.txt
 venv/
 .venv/
 
@@ -12,7 +14,7 @@ venv/
 *.gif
 *.mp4
 screenshots/
-charts/
+
 
 # IDE & OS
 .vscode/
@@ -21,3 +23,7 @@ charts/
 
 # Streamlit secrets
 .streamlit/secrets.toml
+
+# Allow custom visual assets in assets/
+!assets/*.jpg
+!assets/*.png
