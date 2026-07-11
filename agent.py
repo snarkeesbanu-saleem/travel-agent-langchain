@@ -169,6 +169,17 @@ def plan_trip(
 
     # --- 6. Use LLM to generate final itinerary ---
     print("\n--- GENERATING FINAL ITINERARY ---")
+    
+    global GROQ_API_KEY
+    if not GROQ_API_KEY:
+        GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
+        if not GROQ_API_KEY:
+            try:
+                import streamlit as st
+                GROQ_API_KEY = st.secrets.get("GROQ_API_KEY")
+            except Exception:
+                pass
+
     if not GROQ_API_KEY:
         return (f"⚠️ Groq API Key not configured. Here is the raw planning data:\n\n"
                 f"**Flight:**\n{flight_result}\n\n"
